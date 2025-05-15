@@ -10,5 +10,9 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
+# Agregar script de inicio para verificar la conexión
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 EXPOSE ${PORT:-8082}
-CMD ["java", "-jar", "app.jar"]
+CMD ["/app/start.sh"]
