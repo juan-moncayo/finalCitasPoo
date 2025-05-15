@@ -18,8 +18,10 @@ public class Cita {
     private Long medicoId;
     private LocalDateTime fechaHora;
     private String motivo;
-    private String estado; // PROGRAMADA, COMPLETADA, CANCELADA
+    private String estado; 
     private String observaciones;
+    private String estadoPago; // PENDIENTE, PAGADO, ANULADO
+    private Long pagoId;
     
     public Cita() {}
     
@@ -31,6 +33,7 @@ public class Cita {
         this.motivo = motivo;
         this.estado = estado;
         this.observaciones = observaciones;
+        this.estadoPago = "PENDIENTE"; 
     }
 
     public Long getId() { return id; }
@@ -53,4 +56,10 @@ public class Cita {
 
     public String getObservaciones() { return observaciones; }
     public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+    
+    public String getEstadoPago() { return estadoPago; }
+    public void setEstadoPago(String estadoPago) { this.estadoPago = estadoPago; }
+    
+    public Long getPagoId() { return pagoId; }
+    public void setPagoId(Long pagoId) { this.pagoId = pagoId; }
 }

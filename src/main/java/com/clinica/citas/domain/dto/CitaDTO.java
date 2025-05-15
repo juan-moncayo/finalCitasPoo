@@ -8,13 +8,15 @@ public class CitaDTO {
     private Long medicoId;
     private LocalDateTime fechaHora;
     private String motivo;
-    private String estado; // PROGRAMADA, COMPLETADA, CANCELADA
+    private String estado; 
     private String observaciones;
+    private String estadoPago; // PENDIENTE, PAGADO, ANULADO
+    private Long pagoId;
     
-    // Datos adicionales (no se almacenan en la entidad Cita)
     private String nombrePaciente;
     private String nombreMedico;
     private String especialidadMedico;
+    private PagoDTO pago;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -45,4 +47,13 @@ public class CitaDTO {
 
     public String getEspecialidadMedico() { return especialidadMedico; }
     public void setEspecialidadMedico(String especialidadMedico) { this.especialidadMedico = especialidadMedico; }
+    
+    public String getEstadoPago() { return estadoPago; }
+    public void setEstadoPago(String estadoPago) { this.estadoPago = estadoPago; }
+    
+    public Long getPagoId() { return pagoId; }
+    public void setPagoId(Long pagoId) { this.pagoId = pagoId; }
+    
+    public PagoDTO getPago() { return pago; }
+    public void setPago(PagoDTO pago) { this.pago = pago; }
 }

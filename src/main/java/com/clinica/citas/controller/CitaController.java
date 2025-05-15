@@ -1,7 +1,9 @@
 package com.clinica.citas.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clinica.citas.domain.dto.CitaDTO;
+import com.clinica.citas.domain.dto.DisponibilidadMedicoDTO;
 import com.clinica.citas.domain.service.CitaService;
 
 @RestController
@@ -84,15 +87,54 @@ public class CitaController {
         return svc.obtenerPorEspecialidad(especialidadId);
     }
     
+    // Endpoint modificado para aceptar solo fecha (sin hora)
     @GetMapping("/medicos-disponibles")
-    public List<Long> getMedicosDisponibles(
+    public List<DisponibilidadMedicoDTO> getMedicosDisponibles(
+            @RequestParam Long especialidadId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return svc.obtenerDisponibilidadMedicosPorFecha(especialidadId, fecha);
+    }
+    
+    // Mantener el endpoint original para compatibilidad
+    @GetMapping("/medicos-disponibles-hora")
+    public List<DisponibilidadMedicoDTO> getMedicosDisponiblesPorHora(
             @RequestParam Long especialidadId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHora) {
-        return svc.obtenerMedicosDisponibles(especialidadId, fechaHora);
+        return svc.obtenerDisponibilidadMedicos(especialidadId, fechaHora);
     }
     
     @PostMapping("/agenda")
     public ResponseEntity<CitaDTO> agendarCita(@RequestBody CitaDTO dto) {
         return ResponseEntity.ok(svc.guardar(dto));
+    }
+    
+    // Endpoints para integración con pagos
+    @PutMapping("/{id}/estado-pago")
+    public ResponseEntity<CitaDTO> actualizarEstadoPago(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        
+        String estadoPago = (String) payload.get("estadoPago");
+        Long pagoId = payload.containsKey("pagoId") ? Long.valueOf(payload.get("pagoId").toString()) : null;
+        
+        CitaDTO citaActualizada = svc.actualizarEstadoPago(id, estadoPago, pagoId);
+        if (citaActualizada != null) {
+            return ResponseEntity.ok(citaActualizada);
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping("/{id}/pago")
+    public ResponseEntity<?> obtenerPagoDeCita(@PathVariable Long id) {
+        Optional<CitaDTO> citaOpt = svc.obtenerPorId(id);
+        if (citaOpt.isPresent()) {
+            CitaDTO cita = citaOpt.get();
+            if (cita.getPago() != null) {
+                return ResponseEntity.ok(cita.getPago());
+            } else {
+                return ResponseEntity.ok(Map.of("mensaje", "La cita no tiene pago asociado"));
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

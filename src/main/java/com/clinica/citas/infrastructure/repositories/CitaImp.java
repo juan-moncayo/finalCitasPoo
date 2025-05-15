@@ -21,7 +21,7 @@ import com.clinica.citas.infrastructure.mapper.CitaMapper;
 public class CitaImp implements ICita {
 
     @Autowired
-    private CitaRepository repo;
+    public CitaRepository repo;
 
     @Autowired
     private CitaMapper mapper;
@@ -81,8 +81,10 @@ public class CitaImp implements ICita {
     @Override
     public List<CitaDTO> getByEspecialidad(Long especialidadId) {
         try {
-            // Obtener médicos de la especialidad
-            List<MedicoDTO> medicos = medicoClient.getMedicosByEspecialidad(especialidadId);
+            // Obtener médicos de la especialidad - convertir Long a String
+            String especialidadNombre = getEspecialidadNombre(especialidadId);
+            List<MedicoDTO> medicos = medicoClient.getMedicosByEspecialidad(especialidadNombre);
+            
             List<Long> medicosIds = medicos.stream()
                     .map(MedicoDTO::getId)
                     .collect(Collectors.toList());
@@ -106,8 +108,9 @@ public class CitaImp implements ICita {
     @Override
     public List<Long> getMedicosDisponiblesPorEspecialidad(Long especialidadId, LocalDateTime fechaHora) {
         try {
-            // Obtener médicos de la especialidad
-            List<MedicoDTO> medicos = medicoClient.getMedicosByEspecialidad(especialidadId);
+            // Obtener médicos de la especialidad - convertir Long a String
+            String especialidadNombre = getEspecialidadNombre(especialidadId);
+            List<MedicoDTO> medicos = medicoClient.getMedicosByEspecialidad(especialidadNombre);
             
             // Filtrar solo los disponibles
             return medicos.stream()
@@ -116,6 +119,19 @@ public class CitaImp implements ICita {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<>();
+        }
+    }
+    
+    // Método auxiliar para convertir ID de especialidad a nombre
+    private String getEspecialidadNombre(Long especialidadId) {
+        // Mapeo simple de IDs a nombres de especialidad
+        switch (especialidadId.intValue()) {
+            case 1: return "Cardiología";
+            case 2: return "Dermatología";
+            case 3: return "Pediatría";
+            case 4: return "Neurología";
+            case 5: return "Oftalmología";
+            default: return "General";
         }
     }
 }

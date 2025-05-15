@@ -15,11 +15,13 @@ public interface CitaMapper {
     @Mapping(target = "nombrePaciente", ignore = true)
     @Mapping(target = "nombreMedico", ignore = true)
     @Mapping(target = "especialidadMedico", ignore = true)
+    @Mapping(target = "pago", ignore = true)
     CitaDTO toCitaDTO(Cita cita);
 
     List<CitaDTO> toCitasDTO(List<Cita> citas);
 
     @InheritInverseConfiguration
+    @Mapping(target = "estadoPago", defaultValue = "PENDIENTE")
     Cita toCita(CitaDTO dto);
 
     List<Cita> toCitas(List<CitaDTO> dtos);
