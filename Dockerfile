@@ -10,8 +10,13 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Agregar script de inicio para verificar la conexión
-COPY start.sh /app/start.sh
+# Crear el script de inicio directamente en el Dockerfile
+RUN echo '#!/bin/sh\n\
+\n\
+# Iniciar la aplicación directamente\n\
+java -jar app.jar\n\
+' > /app/start.sh
+
 RUN chmod +x /app/start.sh
 
 EXPOSE ${PORT:-8082}
